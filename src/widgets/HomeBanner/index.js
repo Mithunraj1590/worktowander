@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
-const Banner = () => {
+const HomeBanner = () => {
     const [currentSlide, setCurrentSlide] = useState(0)
 
     const slides = [
@@ -121,4 +121,4 @@ const Banner = () => {
     )
 }
 
-export default Banner 
+export default HomeBanner 

@@ -1,4 +1,5 @@
 
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
 import React from "react";
@@ -9,6 +10,8 @@ const CommonLayout = ({ children }) => {
       <Header />
       {/* <PageTransition duration="0.8s" easing="cubic-bezier(0.25, 0.1, 0.25, 1)"> */}
       {children}
+
+      <Footer />
       {/* </PageTransition> */}
 
     </main>

@@ -5,7 +5,7 @@ const pills = [
   {
     text: 'Stay Productive',
     color: 'bg-primary text-secondary',
-    style: 'left-[90px] top-[180px] px-6 py-2',
+    style: 'left-[90px] top-[280px] px-6 py-2',
   },
   {
     text: 'Tick off your bucket list',
@@ -56,7 +56,7 @@ const WhyWorkation = () => {
   ]
 
   return (
-    <section className="">
+    <section className="py-[100px]">
       <div className="container flex items-center justify-center min-h-[600px] lg:min-h-screen py-8">
         {/* Concentric Circles - perfectly center aligned */}
         <div className="relative flex items-center justify-center w-[980px] h-[980px]">
