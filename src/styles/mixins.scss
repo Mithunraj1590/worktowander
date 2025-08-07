@@ -1,0 +1,6 @@
+$base-size: 16;
+
+// Size function to convert px to rem
+@function size($pxValue) {
+  @return $pxValue / $base-size + rem;
+}
