@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface User {
   id: string;
@@ -21,7 +22,57 @@ export default function Header({ user, onLogout }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasAnimated, setHasAnimated] = useState(false);
   const pathname = usePathname();
+
+  // Animation variants
+  const headerVariants = {
+    hidden: { y: -100, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
+
+  const logoVariants = {
+    hidden: { x: -50, opacity: 0 },
+    visible: { x: 0, opacity: 1 }
+  };
+
+  const navVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 }
+  };
+
+  const navItemVariants = {
+    hidden: { y: -20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
+
+  const userSectionVariants = {
+    hidden: { x: 50, opacity: 0 },
+    visible: { x: 0, opacity: 1 }
+  };
+
+  const searchVariants = {
+    hidden: { height: 0, opacity: 0 },
+    visible: { height: "auto", opacity: 1 }
+  };
+
+  const mobileMenuVariants = {
+    hidden: { opacity: 0, y: -20, scale: 0.95 },
+    visible: { opacity: 1, y: 0, scale: 1 }
+  };
+
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: -10, scale: 0.95 },
+    visible: { opacity: 1, y: 0, scale: 1 }
+  };
+
+  // Trigger animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasAnimated(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -62,11 +113,19 @@ export default function Header({ user, onLogout }: HeaderProps) {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 transition-all duration-500">
+    <motion.header 
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 transition-all duration-500"
+      variants={headerVariants}
+      initial="hidden"
+      animate={hasAnimated ? "visible" : "hidden"}
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-18 lg:h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <motion.div 
+            className="flex-shrink-0"
+            variants={logoVariants}
+          >
             <Link href="/" className="flex items-center group">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-bg-primary to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center mr-2 sm:mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300">
                 <span className="text-white font-bold text-sm sm:text-lg">T</span>
@@ -76,33 +135,42 @@ export default function Header({ user, onLogout }: HeaderProps) {
                 <span className="sm:hidden">Travel</span>
               </span>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <motion.nav 
+            className="hidden lg:flex items-center space-x-1"
+            variants={navVariants}
+          >
             {[
               { href: '/', label: 'Home' },
               { href: '/about', label: 'About' },
               { href: '/destinations', label: 'Destinations' },
               { href: '/contact', label: 'Contact' }
             ].map((item) => (
-              <Link 
+              <motion.div
                 key={item.href}
-                href={item.href} 
-                className={`px-3 sm:px-4 py-2 text-base sm:text-lg font-medium transition-all duration-300 relative ${
-                  isActive(item.href)
-                    ? 'text-primary'
-                    : 'text-gray-700 hover:text-primary'
-                }`}
+                variants={navItemVariants}
               >
-                {item.label}
-              
-              </Link>
+                <Link 
+                  href={item.href} 
+                  className={`px-3 sm:px-4 py-2 text-base sm:text-lg font-medium transition-all duration-300 relative ${
+                    isActive(item.href)
+                      ? 'text-primary'
+                      : 'text-gray-700 hover:text-primary'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              </motion.div>
             ))}
-          </nav>
+          </motion.nav>
 
           {/* User Section */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <motion.div 
+            className="flex items-center space-x-2 sm:space-x-4"
+            variants={userSectionVariants}
+          >
             {/* AI Trip Creation Button - Hidden on mobile */}
             <Link
               href="/create-trip"
@@ -223,7 +291,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Search Bar */}
@@ -303,6 +371,6 @@ export default function Header({ user, onLogout }: HeaderProps) {
           }}
         />
       )}
-    </header>
+    </motion.header>
   );
 } 

@@ -101,13 +101,14 @@ const blogPosts = {
 };
 
 interface BlogDetailProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: BlogDetailProps): Promise<Metadata> {
-  const post = blogPosts[params.slug as keyof typeof blogPosts];
+  const { slug } = await params;
+  const post = blogPosts[slug as keyof typeof blogPosts];
   
   if (!post) {
     return {
@@ -136,8 +137,9 @@ export async function generateMetadata({ params }: BlogDetailProps): Promise<Met
   };
 }
 
-export default function BlogDetail({ params }: BlogDetailProps) {
-  const post = blogPosts[params.slug as keyof typeof blogPosts];
+export default async function BlogDetail({ params }: BlogDetailProps) {
+  const { slug } = await params;
+  const post = blogPosts[slug as keyof typeof blogPosts];
 
   if (!post) {
     return (
