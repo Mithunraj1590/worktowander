@@ -83,28 +83,32 @@ const DestinationIcon = ({ className }: { className?: string }) => null;
 
 export default function FeaturedDestinations() {
   return (
-    <section className="relative py-20 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+    <section className="relative py-20 bg-black">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.05),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.05),transparent_50%)]"></div>
+      </div>
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section with Enhanced Design */}
-        <div className="text-center mb-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header Section with Modern Design */}
+        <div className="text-center mb-20">
           {/* Decorative Element */}
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-1 bg-gradient-to-r from-primary to-purple-600 rounded-full"></div>
+          <div className="flex justify-center mb-8">
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
           </div>
           
           {/* Main Heading */}
-          <h2 className="h2 font-bold text-gray-900 mb-6 leading-tight">
-            Featured{' '}
-            <span className="text-primary">
-              Destinations
+          <h2 className="text-5xl md:text-6xl font-black text-white mb-8 leading-tight">
+            FEATURED{' '}
+            <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              DESTINATIONS
             </span>
           </h2>
           
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
             Discover the world's most captivating destinations, carefully selected to inspire 
             your next adventure and create unforgettable travel experiences.
           </p>

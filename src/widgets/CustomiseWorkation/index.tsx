@@ -59,24 +59,23 @@ const CustomiseWorkation = () => {
 
   // Step 1: Team size
   const renderTeamSizeStep = () => (
-    <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+    <div className="bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-white/10">
       <div className="flex flex-col lg:flex-row min-h-[600px]">
         <div className="flex-1 flex flex-col justify-center p-8 lg:p-12">
           <div className="max-w-2xl">
             <div 
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6" 
-              style={{ backgroundColor: 'var(--primary-50)', color: 'var(--primary-600)' }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-white/10 backdrop-blur-md border border-white/20 text-white" 
             >
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--primary-600)' }}></span>
+              <span className="w-2 h-2 rounded-full bg-blue-400"></span>
               Step 1 of 3
             </div>
-            <h3 className="h3 font-bold mb-8 leading-tight text-black">
+            <h3 className="text-4xl md:text-5xl font-black mb-8 leading-tight text-white">
               Choose Your{' '}
-              <span className="" >
+              <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent" >
                 Team Size
               </span>
             </h3>
-            <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-xl mb-8 text-gray-300 font-light">
               Select the size of your team to help us create the perfect workation experience.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -89,13 +88,11 @@ const CustomiseWorkation = () => {
                 <button
                   key={size}
                   onClick={() => updateFormData('teamSize', size)}
-                  className="p-6 rounded-2xl border-2 transition-all duration-300 text-left"
-                  style={{
-                    borderColor: formData.teamSize === size ? 'var(--primary-600)' : 'var(--border-primary)',
-                    backgroundColor: formData.teamSize === size ? 'var(--primary-50)' : 'var(--bg-primary)',
-                    color: formData.teamSize === size ? 'var(--primary-700)' : 'var(--text-secondary)',
-                    boxShadow: formData.teamSize === size ? 'var(--shadow-md)' : 'none'
-                  }}
+                  className={`p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
+                    formData.teamSize === size 
+                      ? 'border-blue-500 bg-blue-500/20 text-white shadow-lg' 
+                      : 'border-white/20 bg-white/5 text-gray-300 hover:border-white/40 hover:bg-white/10'
+                  }`}
                   onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                     if (formData.teamSize !== size) {
                       e.currentTarget.style.borderColor = 'var(--primary-400)';
@@ -351,23 +348,21 @@ const CustomiseWorkation = () => {
   );
 
   return (
-    <section className="py-16 lg:py-24" style={{ background: 'linear-gradient(to bottom right, var(--bg-secondary), var(--primary-50))' }}>
+    <section className="py-16 lg:py-24 bg-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
           <h2 
-            className="h2 font-bold mb-6 leading-tight" 
-            style={{ color: 'var(--text-primary)' }}
+            className="text-5xl md:text-6xl font-black mb-8 leading-tight text-white" 
           >
-            For{' '}
-            Customised {' '}
-            <span className='text-primary'>
-              Workation
+            FOR{' '}
+            CUSTOMISED{' '}
+            <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              WORKATION
             </span>
           </h2>
           <p 
-            className="text-xl max-w-3xl mx-auto" 
-            style={{ color: 'var(--text-secondary)' }}
+            className="text-xl max-w-3xl mx-auto text-gray-300 font-light" 
           >
             Create the perfect workation experience for your team with our personalized planning process.
           </p>
@@ -379,20 +374,21 @@ const CustomiseWorkation = () => {
             {['Team Size', 'Activities', 'Contact', 'Complete'].map((stepName, index) => (
               <div key={index} className="flex items-center">
                 <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                  style={{
-                    backgroundColor: index <= step ? 'var(--primary)' : 'var(--neutral-200)',
-                    color: index <= step ? 'white' : 'var(--text-secondary)'
-                  }}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    index <= step 
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
+                      : 'bg-white/10 text-gray-400 border border-white/20'
+                  }`}
                 >
                   {index + 1}
                 </div>
                 {index < 3 && (
                   <div 
-                    className="w-16 h-1 mx-2"
-                    style={{
-                      backgroundColor: index < step ? 'var(--primary)' : 'var(--neutral-200)'
-                    }}
+                    className={`w-16 h-1 mx-2 ${
+                      index < step 
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600' 
+                        : 'bg-white/10'
+                    }`}
                   />
                 )}
               </div>

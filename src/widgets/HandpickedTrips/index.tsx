@@ -167,30 +167,34 @@ export default function HandpickedTrips() {
 
   return (
     <section 
-      className="relative py-20 bg-gradient-to-br from-slate-50 via-white to-blue-50/30" 
+      className="relative py-20 bg-gray-900" 
       data-section="handpicked-trips"
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,rgba(59,130,246,0.05),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(168,85,247,0.05),transparent_50%)]"></div>
+      </div>
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section with Enhanced Design */}
-        <div className="text-center mb-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header Section with Modern Design */}
+        <div className="text-center mb-20">
           {/* Decorative Element */}
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-1 bg-gradient-to-r from-primary to-purple-600 rounded-full"></div>
+          <div className="flex justify-center mb-8">
+            <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
           </div>
           
           {/* Main Heading */}
-          <h2 className="h2 font-bold text-gray-900 mb-6 leading-tight">
-            Handpicked{' '}
-            <span className="text-primary">
-              Trips
+          <h2 className="text-5xl md:text-6xl font-black text-white mb-8 leading-tight">
+            HANDPICKED{' '}
+            <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              TRIPS
             </span>
           </h2>
           
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
             Discover our carefully curated collection of extraordinary destinations, 
             designed to inspire your next adventure and create unforgettable memories.
           </p>
@@ -218,7 +222,7 @@ export default function HandpickedTrips() {
         {/* Enhanced Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-200/50">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

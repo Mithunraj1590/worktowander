@@ -1,15 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [particleCount, setParticleCount] = useState(0);
+  const [isExploding, setIsExploding] = useState(false);
+  const [achievementUnlocked, setAchievementUnlocked] = useState<string | null>(null);
+  const [interactionCount, setInteractionCount] = useState(0);
+  
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-300, 300], [15, -15]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-15, 15]);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<HTMLDivElement>(null);
 
   // Helper function to check if link is active
   const isActive = (href: string) => {
@@ -22,7 +35,12 @@ export default function Footer() {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      // Handle newsletter subscription
+      setInteractionCount(prev => prev + 1);
+      setIsExploding(true);
+      setAchievementUnlocked('Newsletter Ninja! 🚀');
+      setTimeout(() => setIsExploding(false), 2000);
+      setTimeout(() => setAchievementUnlocked(null), 4000);
+      
       console.log('Newsletter subscription:', email);
       setIsSubscribed(true);
       setEmail('');
@@ -30,213 +48,526 @@ export default function Footer() {
     }
   };
 
-  return (
-    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      mouseX.set(e.clientX - centerX);
+      mouseY.set(e.clientY - centerY);
+    }
+  };
+
+  const handleSectionHover = (section: string) => {
+    setHoveredSection(section);
+    setInteractionCount(prev => prev + 1);
+    
+    // Unlock achievements based on interactions
+    if (interactionCount === 4) {
+      setAchievementUnlocked('Explorer! 🌍');
+      setTimeout(() => setAchievementUnlocked(null), 3000);
+    } else if (interactionCount === 8) {
+      setAchievementUnlocked('Social Butterfly! 🦋');
+      setTimeout(() => setAchievementUnlocked(null), 3000);
+    }
+  };
+
+  const createParticle = (x: number, y: number) => {
+    const particle = document.createElement('div');
+    particle.className = 'absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full pointer-events-none';
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = 2 + Math.random() * 3;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity;
+    
+    let opacity = 1;
+    const animate = () => {
+      const currentX = parseFloat(particle.style.left);
+      const currentY = parseFloat(particle.style.top);
       
-      {/* Main Footer Content */}
-      <div className="container relative z-10">
-        <div className="px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
-            
-            {/* Company Info */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                  <span className="text-white font-bold text-lg">T</span>
-                </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                  TravelAgency
-                </span>
-              </div>
-              <p className="text-gray-300 text-base leading-relaxed mb-6 max-w-md">
-                Discover the world with our handpicked travel experiences. From luxury getaways to budget adventures, we make your travel dreams come true with personalized itineraries and expert guidance.
-              </p>
-              
-              {/* Newsletter Signup */}
-              <div className="mb-8">
-                <h4 className="text-lg font-semibold mb-3">Stay Updated</h4>
-                <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="flex-1 px-4 py-3 bg-white/10 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-                {isSubscribed && (
-                  <p className="text-green-400 text-sm mt-2">Thank you for subscribing!</p>
-                )}
-              </div>
-              
-              {/* Social Media Links */}
-              <div className="flex space-x-4">
-                {[
-                  { name: 'Twitter', href: '#', icon: 'M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z' },
-                  { name: 'Facebook', href: '#', icon: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' },
-                  { name: 'Instagram', href: '#', icon: 'M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.592-.285 1.195.6 2.169 1.775 2.169 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z' },
-                  { name: 'LinkedIn', href: '#', icon: 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z' },
-                  { name: 'YouTube', href: '#', icon: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' }
-                ].map((social) => (
-                  <Link 
-                    key={social.name}
-                    href={social.href} 
-                    className="w-10 h-10 bg-white/10 backdrop-blur-sm border border-gray-600 rounded-xl flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/20 hover:border-gray-500 transition-all duration-300 group"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d={social.icon} />
-                    </svg>
-                  </Link>
-                ))}
-              </div>
-            </div>
+      particle.style.left = `${currentX + vx}px`;
+      particle.style.top = `${currentY + vy}px`;
+      particle.style.opacity = `${opacity}`;
+      
+      opacity -= 0.02;
+      
+      if (opacity > 0) {
+        requestAnimationFrame(animate);
+      } else {
+        particle.remove();
+      }
+    };
+    
+    if (particlesRef.current) {
+      particlesRef.current.appendChild(particle);
+      requestAnimationFrame(animate);
+    }
+  };
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6 text-white">Quick Links</h3>
-              <ul className="space-y-4">
-                {[
-                  { href: '/about', label: 'About Us' },
-                  { href: '/destinations', label: 'Destinations' },
-                  { href: '/contact', label: 'Contact' },
-                  { href: '/create-trip', label: 'Create Trip' },
-                  { href: '/faq', label: 'FAQ' }
-                ].map((link) => (
-                  <li key={link.href}>
-                    <Link 
-                      href={link.href} 
-                      className={`transition-all duration-300 text-sm group ${
-                        isActive(link.href) 
-                          ? 'text-white font-medium' 
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      <span className="relative">
-                        {link.label}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+  const handleExplosion = () => {
+    if (particlesRef.current) {
+      const rect = particlesRef.current.getBoundingClientRect();
+      for (let i = 0; i < 20; i++) {
+        const x = Math.random() * rect.width;
+        const y = Math.random() * rect.height;
+        createParticle(x, y);
+      }
+    }
+  };
 
-            {/* Support */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6 text-white">Support</h3>
-              <ul className="space-y-4">
-                {[
-                  { href: '/help', label: 'Help Center' },
-                  { href: '/terms', label: 'Terms of Service' },
-                  { href: '/privacy', label: 'Privacy Policy' },
-                  { href: '/refund', label: 'Refund Policy' },
-                  { href: '/cookies', label: 'Cookie Policy' }
-                ].map((link) => (
-                  <li key={link.href}>
-                    <Link 
-                      href={link.href} 
-                      className={`transition-all duration-300 text-sm group ${
-                        isActive(link.href) 
-                          ? 'text-white font-medium' 
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      <span className="relative">
-                        {link.label}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+  useEffect(() => {
+    if (isExploding) {
+      handleExplosion();
+    }
+  }, [isExploding]);
 
-            {/* Contact Info */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6 text-white">Contact Us</h3>
-              <div className="space-y-4">
-                {[
-                  {
-                    icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
-                    title: 'Address',
-                    content: ['123 Travel Street', 'Adventure City, AC 12345']
-                  },
-                  {
-                    icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z',
-                    title: 'Phone',
-                    content: ['+1 (555) 123-4567', 'Mon-Fri 9AM-6PM']
-                  },
-                  {
-                    icon: 'M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-                    title: 'Email',
-                    content: ['hello@travelagency.com', 'support@travelagency.com']
-                  }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-start group">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-gray-300 text-sm font-medium">{item.title}</p>
-                      {item.content.map((line, lineIndex) => (
-                        <p key={lineIndex} className="text-gray-400 text-sm">{line}</p>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+  return (
+    <footer 
+      ref={containerRef}
+      className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-white min-h-screen"
+      onMouseMove={handleMouseMove}
+    >
+      {/* Animated Background with 3D Parallax */}
+      <div className="absolute inset-0">
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"
+          style={{ rotateX, rotateY }}
+          transition={{ type: "spring", stiffness: 100, damping: 30 }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.1),transparent_50%)]" />
+        
+        {/* Floating Geometric Shapes */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-32 h-32 border border-cyan-400/20 rounded-full"
+              style={{
+                left: `${20 + i * 15}%`,
+                top: `${30 + i * 10}%`,
+              }}
+              animate={{
+                rotate: [0, 360],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 20 + i * 2,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-800/50 relative z-10">
-        <div className="container">
-          <div className="px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              <div className="text-gray-400 text-sm">
-                © {currentYear} TravelAgency. All rights reserved.
+      {/* Particle System */}
+      <div ref={particlesRef} className="absolute inset-0 pointer-events-none" />
+
+      {/* Achievement Notification */}
+      <AnimatePresence>
+        {achievementUnlocked && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.8 }}
+            className="fixed top-20 right-6 z-50 bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/20 backdrop-blur-sm"
+          >
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">🏆</span>
+              <span className="font-bold">{achievementUnlocked}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Footer Content */}
+      <div className="container relative z-10">
+        <div className="px-4 sm:px-6 lg:px-8 py-20">
+          
+          {/* Interactive Header */}
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div 
+              className="inline-flex items-center mb-6"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="relative">
+                <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4 shadow-2xl">
+                  <span className="text-white font-bold text-2xl">T</span>
+                </div>
+                <motion.div
+                  className="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-2xl blur opacity-75"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                />
               </div>
+              <span className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                TravelAgency
+              </span>
+            </motion.div>
+            
+            <motion.p 
+              className="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto font-light"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              Embark on a journey where technology meets adventure. Experience the future of travel with our AI-powered itineraries, 
+              blockchain-secured bookings, and immersive VR previews.
+            </motion.p>
+          </motion.div>
+
+          {/* Gamified Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-16">
+            
+            {/* Company Info - Interactive Card */}
+            <motion.div 
+              className="lg:col-span-2"
+              whileHover={{ scale: 1.02 }}
+              onHoverStart={() => handleSectionHover('company')}
+            >
+              <motion.div 
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 h-full"
+                whileHover={{ 
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+                  borderColor: "rgba(59, 130, 246, 0.5)"
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                  {hoveredSection === 'company' ? '🚀 Future of Travel' : 'About Us'}
+                </h3>
+                <p className="text-gray-300 text-base leading-relaxed mb-8 font-light">
+                  We're not just a travel agency—we're your gateway to the future. With cutting-edge AI, blockchain technology, 
+                  and immersive experiences, we're redefining what it means to explore the world.
+                </p>
+                
+                {/* Interactive Newsletter */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold mb-4 text-white flex items-center">
+                    <span className="mr-2">📧</span>
+                    Join the Revolution
+                  </h4>
+                  <form onSubmit={handleNewsletterSubmit} className="space-y-4">
+                    <motion.div
+                      className="relative"
+                      whileFocus={{ scale: 1.02 }}
+                    >
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email for exclusive updates"
+                        className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+                        required
+                      />
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 opacity-0"
+                        whileFocus={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </motion.div>
+                    <motion.button
+                      type="submit"
+                      className="w-full px-6 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold rounded-2xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="relative z-10">Subscribe & Unlock Rewards</span>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      />
+                    </motion.button>
+                  </form>
+                  <AnimatePresence>
+                    {isSubscribed && (
+                      <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="text-cyan-400 text-sm mt-3 flex items-center"
+                      >
+                        <span className="mr-2">✅</span>
+                        Welcome to the future! Check your email for exclusive content.
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+                
+                {/* Social Media with Hover Effects */}
+                <div className="flex space-x-4">
+                  {[
+                    { name: 'Twitter', href: '#', icon: '🐦', color: 'from-blue-400 to-blue-600' },
+                    { name: 'Facebook', href: '#', icon: '📘', color: 'from-blue-600 to-blue-800' },
+                    { name: 'Instagram', href: '#', icon: '📸', color: 'from-purple-400 to-pink-600' },
+                    { name: 'LinkedIn', href: '#', icon: '💼', color: 'from-blue-500 to-blue-700' },
+                    { name: 'YouTube', href: '#', icon: '📺', color: 'from-red-500 to-red-700' }
+                  ].map((social) => (
+                    <motion.div
+                      key={social.name}
+                      whileHover={{ scale: 1.2, rotate: 5 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Link 
+                        href={social.href} 
+                        className={`w-12 h-12 bg-gradient-to-br ${social.color} backdrop-blur-sm border border-white/20 rounded-2xl flex items-center justify-center text-white hover:shadow-2xl transition-all duration-300 group`}
+                      >
+                        <span className="text-lg group-hover:scale-110 transition-transform duration-300">
+                          {social.icon}
+                        </span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Quick Links - Holographic Card */}
+            <motion.div 
+              className="relative"
+              whileHover={{ scale: 1.02 }}
+              onHoverStart={() => handleSectionHover('quick')}
+            >
+              <motion.div 
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 h-full relative overflow-hidden"
+                whileHover={{ 
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+                  borderColor: "rgba(168, 85, 247, 0.5)"
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
+                <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent relative z-10">
+                  {hoveredSection === 'quick' ? '⚡ Quick Access' : 'Quick Links'}
+                </h3>
+                <ul className="space-y-4 relative z-10">
+                  {[
+                    { href: '/about', label: 'About Us', icon: '🌟' },
+                    { href: '/destinations', label: 'Destinations', icon: '🗺️' },
+                    { href: '/contact', label: 'Contact', icon: '📞' },
+                    { href: '/create-trip', label: 'Create Trip', icon: '✈️' },
+                    { href: '/faq', label: 'FAQ', icon: '❓' }
+                  ].map((link, index) => (
+                    <motion.li 
+                      key={link.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Link 
+                        href={link.href} 
+                        className={`flex items-center space-x-3 transition-all duration-300 text-sm group ${
+                          isActive(link.href) 
+                            ? 'text-white font-medium' 
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-lg group-hover:scale-110 transition-transform duration-300">
+                          {link.icon}
+                        </span>
+                        <span className="relative">
+                          {link.label}
+                          <motion.span 
+                            className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
+                            initial={{ width: 0 }}
+                            whileHover={{ width: "100%" }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </span>
+                      </Link>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </motion.div>
+
+            {/* Support - Neural Network Card */}
+            <motion.div 
+              className="relative"
+              whileHover={{ scale: 1.02 }}
+              onHoverStart={() => handleSectionHover('support')}
+            >
+              <motion.div 
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 h-full relative overflow-hidden"
+                whileHover={{ 
+                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+                  borderColor: "rgba(34, 197, 94, 0.5)"
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
+                <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-green-400 to-cyan-500 bg-clip-text text-transparent relative z-10">
+                  {hoveredSection === 'support' ? '🤖 AI Support' : 'Support'}
+                </h3>
+                <ul className="space-y-4 relative z-10">
+                  {[
+                    { href: '/help', label: 'Help Center', icon: '🎯' },
+                    { href: '/terms', label: 'Terms of Service', icon: '📋' },
+                    { href: '/privacy', label: 'Privacy Policy', icon: '🔒' },
+                    { href: '/refund', label: 'Refund Policy', icon: '💰' },
+                    { href: '/cookies', label: 'Cookie Policy', icon: '🍪' }
+                  ].map((link, index) => (
+                    <motion.li 
+                      key={link.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Link 
+                        href={link.href} 
+                        className={`flex items-center space-x-3 transition-all duration-300 text-sm group ${
+                          isActive(link.href) 
+                            ? 'text-white font-medium' 
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-lg group-hover:scale-110 transition-transform duration-300">
+                          {link.icon}
+                        </span>
+                        <span className="relative">
+                          {link.label}
+                          <motion.span 
+                            className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-green-500 to-cyan-500"
+                            initial={{ width: 0 }}
+                            whileHover={{ width: "100%" }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </span>
+                      </Link>
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Interactive Contact Section */}
+          <motion.div 
+            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <h3 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              🚀 Connect With Our AI Team
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: '📍',
+                  title: 'Global HQ',
+                  content: ['123 Innovation Street', 'Future City, FC 12345'],
+                  color: 'from-blue-500 to-cyan-500'
+                },
+                {
+                  icon: '📞',
+                  title: 'Smart Phone',
+                  content: ['+1 (555) 123-4567', '24/7 AI Assistant'],
+                  color: 'from-purple-500 to-pink-500'
+                },
+                {
+                  icon: '📧',
+                  title: 'Quantum Email',
+                  content: ['hello@travelagency.ai', 'support@travelagency.ai'],
+                  color: 'from-green-500 to-emerald-500'
+                }
+              ].map((item, index) => (
+                <motion.div 
+                  key={index}
+                  className="text-center group"
+                  whileHover={{ scale: 1.05 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + index * 0.1 }}
+                >
+                  <motion.div 
+                    className={`w-16 h-16 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl`}
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <span className="text-2xl">{item.icon}</span>
+                  </motion.div>
+                  <h4 className="text-lg font-semibold mb-3 text-white">{item.title}</h4>
+                  {item.content.map((line, lineIndex) => (
+                    <p key={lineIndex} className="text-gray-300 text-sm mb-1">{line}</p>
+                  ))}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Interactive Bottom Bar */}
+      <motion.div 
+        className="border-t border-white/10 relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+      >
+        <div className="container">
+          <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <motion.div 
+                className="text-gray-400 text-sm flex items-center space-x-2"
+                whileHover={{ scale: 1.05 }}
+              >
+                <span>© {currentYear} TravelAgency</span>
+                <span className="text-cyan-400">•</span>
+                <span>Powered by AI</span>
+                <span className="text-purple-400">•</span>
+                <span>Future-Ready</span>
+              </motion.div>
               
               <div className="flex items-center space-x-6 text-sm">
                 {[
-                  { href: '/terms', label: 'Terms' },
-                  { href: '/privacy', label: 'Privacy' },
-                  { href: '/cookies', label: 'Cookies' },
-                  { href: '/sitemap', label: 'Sitemap' }
-                ].map((link) => (
-                  <Link 
+                  { href: '/terms', label: 'Terms', icon: '📋' },
+                  { href: '/privacy', label: 'Privacy', icon: '🔒' },
+                  { href: '/cookies', label: 'Cookies', icon: '🍪' },
+                  { href: '/sitemap', label: 'Sitemap', icon: '🗺️' }
+                ].map((link, index) => (
+                  <motion.div
                     key={link.href}
-                    href={link.href} 
-                    className={`transition-all duration-300 group ${
-                      isActive(link.href) 
-                        ? 'text-white font-medium' 
-                        : 'text-gray-400 hover:text-white'
-                    }`}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <span className="relative">
-                      {link.label}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-                    </span>
-                  </Link>
+                    <Link 
+                      href={link.href} 
+                      className={`flex items-center space-x-2 transition-all duration-300 group ${
+                        isActive(link.href) 
+                          ? 'text-white font-medium' 
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-lg group-hover:scale-110 transition-transform duration-300">
+                        {link.icon}
+                      </span>
+                      <span className="relative">
+                        {link.label}
+                        <motion.span 
+                          className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500"
+                          initial={{ width: 0 }}
+                          whileHover={{ width: "100%" }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </span>
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 } 
