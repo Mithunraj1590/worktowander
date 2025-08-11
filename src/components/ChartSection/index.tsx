@@ -79,7 +79,7 @@ const chartOptions = {
         color: 'rgba(255, 255, 255, 0.8)',
         font: {
           size: 12,
-          weight: '600',
+          weight: 600,
         },
         usePointStyle: true,
         pointStyle: 'circle',
@@ -95,7 +95,7 @@ const chartOptions = {
       displayColors: true,
       titleFont: {
         size: 14,
-        weight: '600',
+        weight: 600,
       },
       bodyFont: {
         size: 12,

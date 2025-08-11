@@ -65,7 +65,7 @@ const userData = {
   ]
 };
 
-export default function UserDetailsPage({ params }: { params: { id: string } }) {
+export default function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <div className="space-y-6">

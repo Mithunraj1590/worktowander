@@ -105,7 +105,7 @@ const availablePermissions = [
   'System Settings'
 ];
 
-export default function AdminDetailsPage({ params }: { params: { id: string } }) {
+export default function AdminDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState(adminData);
 

@@ -11,6 +11,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [showChatDropdown, setShowChatDropdown] = useState(false);
+  const [showAllAdmins, setShowAllAdmins] = useState(false);
 
   const notifications = [
     {
@@ -47,11 +50,6 @@ export default function AdminLayout({
     },
   ];
 
-  const unreadCount = notifications.filter(n => n.unread).length;
-  const [showChat, setShowChat] = useState(false);
-  const [showChatDropdown, setShowChatDropdown] = useState(false);
-  const [showAllAdmins, setShowAllAdmins] = useState(false);
-
   const chatMessages = [
     {
       id: 1,
@@ -86,9 +84,6 @@ export default function AdminLayout({
       status: 'offline',
     },
   ];
-
-  const unreadChatCount = chatMessages.filter(m => m.unread).length;
-  const onlineAdmins = chatMessages.filter(m => m.status === 'online').length;
 
   const allAdmins = [
     {
@@ -147,6 +142,10 @@ export default function AdminLayout({
     },
   ];
 
+  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadChatCount = chatMessages.filter(m => m.unread).length;
+  const onlineAdmins = chatMessages.filter(m => m.status === 'online').length;
+
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex">
       {/* Sidebar - Fixed */}
@@ -162,7 +161,6 @@ export default function AdminLayout({
             {/* Page Title */}
             <div className="space-x-3">
               <h1 className="text-xl font-bold text-white">Welcome back, Admin!</h1>
-
             </div>
 
             {/* Right side actions */}
@@ -516,36 +514,36 @@ export default function AdminLayout({
               className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-2xl h-96 flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-                             {/* Chat Header */}
-               <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                 <div className="flex items-center space-x-3">
-                   <button 
-                     onClick={() => {
-                       setShowChat(false);
-                       setShowAllAdmins(true);
-                     }}
-                     className="text-gray-400 hover:text-white transition-colors mr-2"
-                   >
-                     ←
-                   </button>
-                   <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                     SJ
-                   </div>
-                   <div>
-                     <h3 className="text-white font-semibold">Sarah Johnson</h3>
-                     <div className="flex items-center space-x-1">
-                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                       <span className="text-green-400 text-xs">Online</span>
-                     </div>
-                   </div>
-                 </div>
-                 <button 
-                   onClick={() => setShowChat(false)}
-                   className="text-gray-400 hover:text-white transition-colors"
-                 >
-                   ✕
-                 </button>
-               </div>
+              {/* Chat Header */}
+              <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <button 
+                    onClick={() => {
+                      setShowChat(false);
+                      setShowAllAdmins(true);
+                    }}
+                    className="text-gray-400 hover:text-white transition-colors mr-2"
+                  >
+                    ←
+                  </button>
+                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    SJ
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold">Sarah Johnson</h3>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-green-400 text-xs">Online</span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowChat(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
 
               {/* Chat Messages */}
               <div className="flex-1 p-4 overflow-y-auto space-y-4">
