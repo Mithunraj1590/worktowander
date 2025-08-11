@@ -4,12 +4,21 @@ import DashboardSidebar from '@/widgets/DashboardSidebar';
 import Link from 'next/link';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isSignInPage = pathname === '/admin';
+  
+  // If it's the sign-in page, render without dashboard layout
+  if (isSignInPage) {
+    return <>{children}</>;
+  }
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showChatDropdown, setShowChatDropdown] = useState(false);
