@@ -4,6 +4,7 @@ import "./globals.css";
 import "@/styles/main.scss";
 import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -40,7 +41,7 @@ export default function RootLayout({
         <main>
           {children}
         </main>
-        <Footer />
+        <ConditionalFooter />
       </body>
     </html>
   );

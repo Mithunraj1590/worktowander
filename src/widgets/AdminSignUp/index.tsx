@@ -99,13 +99,12 @@ export default function SignInWidget({ onSignIn }: SignInWidgetProps) {
 
         {/* Heading */}
         <h1 className="text-3xl font-bold text-center text-gray-900 mb-4">
-          Start Your Travel Journey
+        Admin Dashboard Login
         </h1>
 
         {/* Description */}
         <p className="text-gray-600 text-center mb-8 leading-relaxed">
-          Sign in with Google to explore AI-generated itineraries, trending destinations, and much more
-        </p>
+Sign in with Google to manage destinations, itineraries, and user activity with ease.        </p>
 
         {/* Google Sign In Button */}
         <button
