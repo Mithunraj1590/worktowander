@@ -83,7 +83,7 @@ export default function DashboardSidebar() {
               whileTap={{ scale: 0.9 }}
               className="text-gray-400 hover:text-white transition-colors"
             >
-              🚪
+            
             </motion.button>
           </div>
         </div>

@@ -24,7 +24,7 @@ interface Booking {
 }
 
 // Mock booking data
-const mockBookings = [
+const mockBookings: Booking[] = [
   {
     id: 'BK001',
     tripName: 'Luxury Bali Adventure',
@@ -501,7 +501,7 @@ export default function BookingsPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-400">Duration:</span>
                     <span className="text-white">
-                      {Math.ceil((new Date(selectedBooking.returnDate) - new Date(selectedBooking.travelDate)) / (1000 * 60 * 60 * 24))} days
+                      {Math.ceil((new Date(selectedBooking.returnDate).getTime() - new Date(selectedBooking.travelDate).getTime()) / (1000 * 60 * 60 * 24))} days
                     </span>
                   </div>
                   <div className="flex justify-between">
